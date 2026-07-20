@@ -231,3 +231,11 @@ Nevertheless it was an amazing journey and I learned a lot along the way!
 Finally, it's worth mentioning that this isn't a scientific dataset. Some entries are estimates, the way I estimated my time is subjective and I wasn't always consistent when recording the data. Even so, I think it shows a nice picture of what a year of building a side project alongside a full-time job actually looked like.
 
 July 2026
+
+# License
+
+The python code is licensed under the MIT License.
+
+The article, charts and dataset are original work created by ddimos and are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0).
+
+You are free to use, share and adapt these materials, provided that appropriate credit is given to the original author.
