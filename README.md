@@ -184,11 +184,20 @@ The result is exactly as expected, with the schedule mostly concentrated on week
 
 **Note for my manager:** the daytime work visible on this chart happened during holidays and vacations days. Not the office time :)
 
-Finally, the last heatmap shows how my working schedule evolved over the entire period.
+We can also look at the data from a bit different angle.
 
 <div align="center">
-  <img src="images/4_5_workschedulebyweek.png">
-  <p><em>Figure 4.5 Work Schedule by Week</em></p>
+  <img src="images/4_5_worktimeoverlapandintervals.png">
+  <p><em>Figure 4.5 Work Time: Overlap and Intervals</em></p>
+</div>
+
+Making an overlap of all working intervals gives the most probable time of working, which is around **23:20**.
+
+The interval chart and the next heatmap give a good overview of how my working schedule changed over the entire period.
+
+<div align="center">
+  <img src="images/4_6_workschedulebyweek.png">
+  <p><em>Figure 4.6 Work Schedule by Week</em></p>
 </div>
 
 I summed up the data by week to have it less noisy.

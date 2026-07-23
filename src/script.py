@@ -199,7 +199,7 @@ def plotPerDay(perDay):
     # Linear
     plt.figure(figsize=(10, 5))
     plt.plot(counts, hours)
-    plt.fill_between(counts, hours)
+    plt.fill_between(counts, hours, alpha=0.3)
     plt.xlabel("Date")
     plt.ylabel("Hours")
     plt.title("Daily Work Time")
@@ -207,18 +207,20 @@ def plotPerDay(perDay):
     plt.xlim(counts[0], counts[len(counts)-1])
     plt.xticks(range(0, 442, 7), [f"{dates[i]}" for i in range(64)], rotation=20)
     plt.tight_layout()
+    plt.grid(alpha=0.3)
     plt.show()
 
     # Cumulative
     plt.figure(figsize=(10, 5))
     plt.plot(counts, hoursCumulative)
-    plt.fill_between(counts, hoursCumulative)
+    plt.fill_between(counts, hoursCumulative, alpha=0.3)
     plt.ylabel("Hours")
     plt.title("Cumulative Work Time")
     plt.ylim(0, 410)
     plt.xlim(counts[0], counts[len(counts)-1])
     plt.xticks(range(0, 442, 7), [f"{dates[i]}" for i in range(64)], rotation=20)
     plt.tight_layout()
+    plt.grid(alpha=0.3)
     plt.show()
     
 def plotByWeek(perDay):
@@ -671,12 +673,66 @@ def plotTimeOfWorkingPerDayOfWeek(days):
     plt.ylabel("Day of week")
     plt.show()
 
+def plotOverlapAndIntervals(days):
+    ShiftHours = 4
+
+    times = np.arange(0, 24, 1/60)
+    counts = np.zeros_like(times)
+
+    daysSorted = sorted(days, key=lambda x: x[0])
+    
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(9, 5))
+
+    for i, (dateTimeStart, dateTimeEnd, isTheSameDay, weekday, realDuration) in enumerate(daysSorted):
+        shiftedStart = dateTimeStart - timedelta(hours=ShiftHours)
+        shiftedEnd = dateTimeEnd - timedelta(hours=ShiftHours)
+
+        startHour = shiftedStart.hour + shiftedStart.minute / 60 + shiftedStart.second / 3600
+        endHour = shiftedEnd.hour + shiftedEnd.minute / 60 + shiftedEnd.second / 3600
+
+        if endHour < startHour:
+            ValueError(f"Need to adjust the shift: {endHour}")
+
+        ax2.hlines(y=i, xmin=startHour, xmax=endHour)
+
+        counts += ((times >= startHour) & (times <= endHour)).astype(int)
+
+    window = 30
+    kernel = np.ones(window) / window
+    smoothCounts = np.convolve(counts, kernel, mode="same")
+    ticks = np.arange(0, 25, 1)
+    labels = [f"{(t + ShiftHours) % 24:02.0f}" for t in ticks]
+
+    ax1.plot(times, smoothCounts)
+    ax1.set_xlim(0, 24)
+    ax1.set_ylim(0, 105)
+    ax1.fill_between(times, smoothCounts, alpha=0.3)
+    ax1.set_xticks(ticks)
+    ax1.set_xticklabels(labels)
+    ax1.grid(alpha=0.3)
+
+    ax1.set_ylabel("Frequency")
+    ax1.set_title("Work Time: Overlap and Intervals")
+
+    ax2.set_xlim(0, 24)
+    ax2.set_ylim(0, 320)
+    ax2.set_xticks(ticks)
+    ax2.set_xticklabels(labels)
+    ax2.grid(alpha=0.3)
+
+    ax2.set_ylabel("Activity")
+
+    plt.xlabel("Time of day")
+    plt.show()
+
 def plotTimeForTheWholeDuration(days):
     x = []
     y = []
 
-    firstDay = days[len(days)-1][0] # TODO A bit risky to do it without sorting
-    for i, (dateTimeStart, dateTimeEnd, isTheSameDay, weekday, realDuration) in enumerate(days):
+    daysSorted = sorted(days, key=lambda x: x[0])
+
+    firstDay = daysSorted[0][0]
+    for i, (dateTimeStart, dateTimeEnd, isTheSameDay, weekday, realDuration) in enumerate(daysSorted):
         if isTheSameDay and dateTimeStart.hour == dateTimeEnd.hour:
             dt = dateTimeStart-firstDay
             x.append(dt.days)
@@ -694,7 +750,7 @@ def plotTimeForTheWholeDuration(days):
     currentDate = firstDay
     i = 0
     prevMonth = 0
-    while currentDate <= days[0][0]:
+    while currentDate <= daysSorted[len(daysSorted)-1][0]:
         day = i % 7
         if day == 0:
             if prevMonth != currentDate.date().month:
@@ -803,6 +859,8 @@ perDay = calculatePerDay(days)
 # 4.4
 # plotTimeOfWorkingPerDayOfWeek(days)
 # 4.5
+# plotOverlapAndIntervals(days)
+# 4.6
 # plotTimeForTheWholeDuration(days)
 
 # 5.1
